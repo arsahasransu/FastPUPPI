@@ -11,7 +11,11 @@ if [[ "$1" == "-j" ]]; then N=$2; shift; shift; fi;
 
 OPTS=""
 
-if [[ "$1" == "--131X_v9a" ]]; then
+if [[ "$1" == "--240801_131Xv3a" ]]; then
+    shift;
+    MAIN=/pnfs/pp.rl.ac.uk/data/cms/store/user/asahasra/$1
+    PREFIX="inputs131X_"
+elif [[ "$1" == "--131X_v9a" ]]; then
     shift;
     MAIN=/eos/cms/store/cmst3/group/l1tr/FastPUPPI/14_0_X/fpinputs_131X/v9a/$1
     PREFIX="inputs131X_"
@@ -70,6 +74,16 @@ fi
 
 PSCRIPT=$CMSSW_BASE/src/FastPUPPI/NtupleProducer/python/scripts/
 $PSCRIPT/cmsSplit.pl --files "$MAIN/${PREFIX}*root" --label ${OUTPUT} ${CODE}.py --bash --n $N --rrb $OPTS  $* && bash ${CODE}_${OUTPUT}_local.sh 
+: '
+echo $MAIN
+echo $PREFIX
+echo $OUTPUT
+echo $CODE
+echo $N
+echo $OPTS
+echo $*
+'
+#$PSCRIPT/cmsSplit.pl --files "$MAIN/${PREFIX}*root" --label ${OUTPUT} ${CODE}.py --bash --maxfiles 1 --maxevents 11 --n $N --rrb $OPTS  $* && bash ${CODE}_${OUTPUT}_local.sh 
 
 if $clean; then
     REPORT=$(grep -o "tee \S\+_${OUTPUT}.report.txt" ${CODE}_${OUTPUT}_local.sh  | awk '{print $2}');

@@ -10,8 +10,8 @@ use Cwd;
 my $verbose = 1; my $label = ''; 
 my ($dataset,$dbsql,$filelist,$filedir,$castor,$filesperjob,$jobs,$pretend,$args,$evjob,$triangular,$rrb,$customize,$inlinecustomize,$maxfiles,$maxevents,$skipfiles,$json,$fnal,$AAA,$addparents,$randomize);
 my ($bash,$lsf,$help,$byrun,$bysize,$nomerge,$evperfilejob,$evperfile,$eosoutdir,$outdir);
-my $monitor="/afs/cern.ch/user/g/gpetrucc/pl/cmsTop.pl";#"wc -l";
-my $report= "/afs/cern.ch/user/g/gpetrucc/sh/report";   #"grep 'Events total'";
+my $monitor="/mercury/data3/asahasra/Phase2L1tAlgoStudies/CMSSW_14_0_0_pre3/src/cmsTop.pl";#"wc -l";
+my $report= "/mercury/data3/asahasra/Phase2L1tAlgoStudies/CMSSW_14_0_0_pre3/src/report";   #"grep 'Events total'";
 my $maxsyncjobs = 99;
 my $subprocesses = 0;
 my $firstlumiblock = 1;
@@ -259,6 +259,7 @@ if (defined($dbsql)) {
         if ($what eq "IN") { push @files, $arg; } 
     }
 }
+print @files;
 chomp @files;
 if ($AAA) {
     print "Using cms-xrd-global.cern.ch redirector\n" if $verbose;
