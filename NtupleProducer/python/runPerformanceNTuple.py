@@ -163,9 +163,10 @@ monitorPerf("L1Puppi", "l1tLayer1:Puppi")
 # to check available tags:
 #process.content = cms.EDAnalyzer("EventContentAnalyzer")
 process.p = cms.Path(
-        process.ntuple + #process.content +
-        process.l1pfjetTable + 
-        process.l1pfmetTable + process.l1pfmetCentralTable
+        process.ntuple
+        # + process.content +
+        # process.l1pfjetTable + 
+        # process.l1pfmetTable + process.l1pfmetCentralTable
         )
 process.p.associate(process.extraPFStuff)
 process.TFileService = cms.Service("TFileService", fileName = cms.string("perfTuple.root"))
@@ -755,11 +756,17 @@ def saveCands():
                                            moreVariables = cms.PSet(
                                                puppiWeight = cms.string("puppiWeight"),
                                                pdgId = cms.string("pdgId"),
-                                               charge = cms.string("charge")
+                                               charge = cms.string("charge"),
+                                               dxy = cms.string("dxy"),
+                                               hwDxy = cms.string("hwDxy"),
+                                               z0 = cms.string("z0"),
+                                               hwTkQuality = cms.string("hwTkQuality")
                                            ),
                                        )
-    monitorPerf("L1PF", "l1tLayer1:PF", saveCands=True)
-    monitorPerf("L1Puppi", "l1tLayer1:Puppi", saveCands=True)
+    # monitorPerf("L1PF", "l1tLayer1:PF", makeResp=False, makeRespSplit=False, makeJets=False, makeMET=False, makeCentralMET=False,
+    #             makeInputMultiplicities=False, makeOutputMultiplicities=False, saveCands=True)
+    monitorPerf("L1Puppi", "l1tLayer1:Puppi", makeResp=False, makeRespSplit=False, makeJets=False, makeMET=False, makeCentralMET=False,
+                makeInputMultiplicities=False, makeOutputMultiplicities=False, saveCands=True)
     process.p += process.l1pfcandTable
 
 def saveGenCands():
