@@ -176,7 +176,7 @@ monitorPerf("L1Puppi", "l1tLayer1:Puppi")
 # to check available tags:
 #process.content = cms.EDAnalyzer("EventContentAnalyzer")
 process.p = cms.Path(
-        process.ntuple + #process.content +
+        process.ntuple #+ process.content +
         # process.l1pfjetTable + 
         # process.l1pfmetTable + process.l1pfmetCentralTable
         )
