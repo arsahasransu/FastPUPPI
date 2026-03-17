@@ -14,7 +14,7 @@ OPTS=""
 
 if [[ "$1" == "--151Xv1" ]]; then
     shift;
-    MAIN=/pnfs/pp.rl.ac.uk/data/cms/store/user/asahasra/$1
+    MAIN=/pnfs/pp.rl.ac.uk/data/cms/store/user/asahasra/$1/*/*/*
     PREFIX="inputs151X_"
 elif [[ "$1" == "--131X_v9a" ]]; then
     shift;

@@ -13,10 +13,10 @@ process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True), allowUnscheduled = cms.untracked.bool(False) )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1))
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:inputs125X.root'),
+    fileNames = cms.untracked.vstring('file:./inputs151X_1.root'),
     inputCommands = cms.untracked.vstring("keep *", 
             "drop l1tPFClusters_*_*_*",
             "drop l1tPFTracks_*_*_*",
@@ -372,10 +372,10 @@ def addGen(pdgs):
                 singleton = cms.bool(False), # the number of entries is variable
                 extension = cms.bool(False), # this is the main table
                 variables = cms.PSet(
-                    pt  = Var("pt",  float,precision=8),
-                    phi = Var("phi", float,precision=8),
-                    eta  = Var("eta", float,precision=8),
-                    vz   = Var("vz",  float,precision=8),
+                    pt  = Var("pt",  float,precision=16),
+                    phi = Var("phi", float,precision=16),
+                    eta  = Var("eta", float,precision=16),
+                    vz   = Var("vz",  float,precision=16),
                     charge  = Var("charge", int, doc="charge id"),
                     prompt  = Var("2*statusFlags().isPrompt() + statusFlags().isDirectPromptTauDecayProduct()", int, doc="Particle status."),
                 )
@@ -437,9 +437,9 @@ def addStaMu():
                         singleton = cms.bool(False), # the number of entries is variable
                         extension = cms.bool(False), # this is the main table
                         variables = cms.PSet(
-                            pt  = Var("pt",  float,precision=8),
-                            phi = Var("phi", float,precision=8),
-                            eta  = Var("eta", float,precision=8),
+                            pt  = Var("pt",  float,precision=16),
+                            phi = Var("phi", float,precision=16),
+                            eta  = Var("eta", float,precision=16),
                             charge  = Var("charge", int, doc="charge id"),
                             quality  = LazyVar("hwQual", int, doc="charge id"),
                         )
@@ -456,12 +456,12 @@ def addHGCalTPs():
                 singleton = cms.bool(False), # the number of entries is variable
                 extension = cms.bool(False), # this is the main table
                 variables = cms.PSet(
-                    pt  = LazyVar("pt",  float,precision=8),
-                    phi = LazyVar("phi", float,precision=8),
-                    eta  = LazyVar("eta", float,precision=8),
-                    nTcs = LazyVar("constituents.size",  int,precision=8),
-                    ptEm = LazyVar("iPt('EM')",  float,precision=8),
-                    hwQual = LazyVar("hwQual",  int,precision=8),
+                    pt  = LazyVar("pt",  float,precision=16),
+                    phi = LazyVar("phi", float,precision=16),
+                    eta  = LazyVar("eta", float,precision=16),
+                    nTcs = LazyVar("constituents.size",  int,precision=16),
+                    ptEm = LazyVar("iPt('EM')",  float,precision=16),
+                    hwQual = LazyVar("hwQual",  int,precision=16),
                     showerlength = LazyVar("showerLength", int),
                     coreshowerlength = LazyVar("coreShowerLength", int),
                     firstlayer = LazyVar("firstLayer", int),
@@ -525,10 +525,10 @@ def addPFLep(pdgs=[11,13,22],opts=["PF","Puppi"], postfix=""):
                         singleton = cms.bool(False), # the number of entries is variable
                         extension = cms.bool(False), # this is the main table
                         variables = cms.PSet(
-                            pt  = Var("pt",  float,precision=8),
-                            phi = Var("phi", float,precision=8),
-                            eta  = Var("eta", float,precision=8),
-                            vz   = Var("vz",  float,precision=8),
+                            pt  = Var("pt",  float,precision=16),
+                            phi = Var("phi", float,precision=16),
+                            eta  = Var("eta", float,precision=16),
+                            vz   = Var("vz",  float,precision=16),
                             charge  = Var("charge", int, doc="charge id"),
                         )
                     )
@@ -547,21 +547,21 @@ def addPFLep(pdgs=[11,13,22],opts=["PF","Puppi"], postfix=""):
                 setattr(process, w+"El"+postfix+"Table", elTable)
                 process.extraPFStuff.add(elTable)
                 elTable.variables.hwEmID = LazyVar("? pfCluster.isNonnull ? pfCluster.hwEmID : -1", int, doc="Quality")
-                elTable.variables.pfEmID = LazyVar("? pfCluster.isNonnull ? pfCluster.egVsPionMVAOut : -1", float, precision=8)
-                elTable.variables.pfPuID = LazyVar("? pfCluster.isNonnull ? pfCluster.egVsPUMVAOut : -1", float, precision=8)
-                elTable.variables.clPt   = LazyVar("? pfCluster.isNonnull ? pfCluster.pt : -1", float, precision=8)
-                elTable.variables.clEmEt = LazyVar("? pfCluster.isNonnull ? pfCluster.emEt : -1", float, precision=8)
+                elTable.variables.pfEmID = LazyVar("? pfCluster.isNonnull ? pfCluster.egVsPionMVAOut : -1", float, precision=16)
+                elTable.variables.pfPuID = LazyVar("? pfCluster.isNonnull ? pfCluster.egVsPUMVAOut : -1", float, precision=16)
+                elTable.variables.clPt   = LazyVar("? pfCluster.isNonnull ? pfCluster.pt : -1", float, precision=16)
+                elTable.variables.clEmEt = LazyVar("? pfCluster.isNonnull ? pfCluster.emEt : -1", float, precision=16)
             elif pdgId == 22:
                 phTable = pfLepTable.clone(
                             cut  = cms.string("abs(pdgId) == %d && pt > 8" % pdgId),
                             name = cms.string(w+"Ph"+postfix))
                 phTable.variables.hwEmID = LazyVar("hwEmID", int)
-                phTable.variables.pfPuID = LazyVar("? pfCluster.isNonnull ? pfCluster.egVsPUMVAOut : -1", float, precision=8)
-                elTable.variables.pfEmID = LazyVar("? pfCluster.isNonnull ? pfCluster.egVsPionMVAOut : -1", float, precision=8)
-                elTable.variables.clPt   = LazyVar("? pfCluster.isNonnull ? pfCluster.pt : -1", float, precision=8)
-                elTable.variables.clEmEt = LazyVar("? pfCluster.isNonnull ? pfCluster.emEt : -1", float, precision=8)
+                phTable.variables.pfPuID = LazyVar("? pfCluster.isNonnull ? pfCluster.egVsPUMVAOut : -1", float, precision=16)
+                elTable.variables.pfEmID = LazyVar("? pfCluster.isNonnull ? pfCluster.egVsPionMVAOut : -1", float, precision=16)
+                elTable.variables.clPt   = LazyVar("? pfCluster.isNonnull ? pfCluster.pt : -1", float, precision=16)
+                elTable.variables.clEmEt = LazyVar("? pfCluster.isNonnull ? pfCluster.emEt : -1", float, precision=16)
                 if w == "Puppi":
-                    phTable.variables.puppiW = LazyVar("puppiWeight", float, precision=8)
+                    phTable.variables.puppiW = LazyVar("puppiWeight", float, precision=16)
                 setattr(process, w+"Ph"+postfix+"Table", phTable)
                 process.extraPFStuff.add(phTable)
 
@@ -575,9 +575,9 @@ def addStaEG(postfix=""):
                         singleton = cms.bool(False), # the number of entries is variable
                         extension = cms.bool(False), # this is the main table
                         variables = cms.PSet(
-                            pt  = Var("pt",  float,precision=8),
-                            phi = Var("phi", float,precision=8),
-                            eta  = Var("eta", float,precision=8),
+                            pt  = Var("pt",  float,precision=16),
+                            phi = Var("phi", float,precision=16),
+                            eta  = Var("eta", float,precision=16),
                             hwQual    = LazyVar("hwQual", int, doc="id"),
                         )
                     )
@@ -602,16 +602,16 @@ def addTkEG(doL1=False, doL2=True, postfix=""):
                         singleton = cms.bool(False), # the number of entries is variable
                         extension = cms.bool(False), # this is the main table
                         variables = cms.PSet(
-                            pt  = Var("pt",  float,precision=8),
-                            phi = Var("phi", float,precision=8),
-                            eta  = Var("eta", float,precision=8),
+                            pt  = Var("pt",  float,precision=16),
+                            phi = Var("phi", float,precision=16),
+                            eta  = Var("eta", float,precision=16),
                             hwQual    = LazyVar("hwQual", int, doc="id"),
-                            tkIso   = LazyVar("trkIsol", float, precision=8),
-                            tkIsoPV  = LazyVar("trkIsolPV", float, precision=8),
-                            pfIso   = LazyVar("pfIsol", float, precision=8),
-                            pfIsoPV  = LazyVar("pfIsolPV", float, precision=8),
-                            puppiIso   = LazyVar("puppiIsol", float, precision=8),
-                            puppiIsoPV  = LazyVar("puppiIsolPV", float, precision=8),
+                            tkIso   = LazyVar("trkIsol", float, precision=16),
+                            tkIsoPV  = LazyVar("trkIsolPV", float, precision=16),
+                            pfIso   = LazyVar("pfIsol", float, precision=16),
+                            pfIsoPV  = LazyVar("pfIsolPV", float, precision=16),
+                            puppiIso   = LazyVar("puppiIsol", float, precision=16),
+                            puppiIsoPV  = LazyVar("puppiIsolPV", float, precision=16),
                         )
                     )
         tkEleTable = tkEmTable.clone(
@@ -619,13 +619,13 @@ def addTkEG(doL1=False, doL2=True, postfix=""):
                         src = cms.InputTag(tkele_inputtag),
                     )
         tkEleTable.variables.charge = LazyVar("charge", int, doc="charge")
-        tkEleTable.variables.idScore = LazyVar("idScore", float,precision=8)
-        tkEleTable.variables.vz     = LazyVar("trkzVtx",  float,precision=8)
-        tkEleTable.variables.tkEta = LazyVar("trkPtr.eta", float,precision=8)
-        tkEleTable.variables.tkPhi = LazyVar("trkPtr.phi", float,precision=8)
-        tkEleTable.variables.tkPt = LazyVar("trkPtr.momentum.perp", float,precision=8)
-        tkEleTable.variables.caloEta = LazyVar("egCaloPtr.eta", float,precision=8)
-        tkEleTable.variables.caloPhi = LazyVar("egCaloPtr.phi", float,precision=8)
+        tkEleTable.variables.idScore = LazyVar("idScore", float,precision=16)
+        tkEleTable.variables.vz     = LazyVar("trkzVtx",  float,precision=16)
+        tkEleTable.variables.tkEta = LazyVar("trkPtr.eta", float,precision=16)
+        tkEleTable.variables.tkPhi = LazyVar("trkPtr.phi", float,precision=16)
+        tkEleTable.variables.tkPt = LazyVar("trkPtr.momentum.perp", float,precision=16)
+        tkEleTable.variables.caloEta = LazyVar("egCaloPtr.eta", float,precision=16)
+        tkEleTable.variables.caloPhi = LazyVar("egCaloPtr.phi", float,precision=16)
 
         return tkEmTable, tkEleTable
                                    
@@ -653,15 +653,15 @@ def addDecodedTk(regs=['HGCal','Barrel']):
                         singleton = cms.bool(False), # the number of entries is variable
                         extension = cms.bool(False), # this is the main table
                         variables = cms.PSet(
-                            pt  = Var("pt",  float,precision=8),
-                            phi = Var("phi", float,precision=8),
-                            eta  = Var("eta", float,precision=8),
-                            caloPhi = LazyVar("caloPhi", float,precision=8),
-                            caloEta  = LazyVar("caloEta", float,precision=8),
-                            vz = LazyVar("vz", float,precision=8),
-                            chi2RPhi = LazyVar("trackWord.getChi2RPhi", float,precision=8),
-                            chi2RZ = LazyVar('trackWord.getChi2RZ', float, precision=8),
-                            chi2Bend = LazyVar('trackWord.getBendChi2', float, precision=8),
+                            pt  = Var("pt",  float,precision=16),
+                            phi = Var("phi", float,precision=16),
+                            eta  = Var("eta", float,precision=16),
+                            caloPhi = LazyVar("caloPhi", float,precision=16),
+                            caloEta  = LazyVar("caloEta", float,precision=16),
+                            vz = LazyVar("vz", float,precision=16),
+                            chi2RPhi = LazyVar("trackWord.getChi2RPhi", float,precision=16),
+                            chi2RZ = LazyVar('trackWord.getChi2RZ', float, precision=16),
+                            chi2Bend = LazyVar('trackWord.getBendChi2', float, precision=16),
                             hitPattern = LazyVar('trackWord.getHitPattern', int),
                             nStubs = LazyVar('trackWord.getNStubs', int),
                             mvaQual = LazyVar('trackWord.getMVAQuality', int),
@@ -682,24 +682,24 @@ def addEGCrystalClusters() -> None:
                                         singleton = cms.bool(False), # the number of entries is variable
                                         extension = cms.bool(False), # this is the main table
                                         variables = cms.PSet(
-                                            isolation  = LazyVar("isolation", float,precision=8),
-                                            pt  = Var("pt",  float,precision=8),
-                                            eta  = Var("eta", float,precision=8),
-                                            phi = Var("phi", float,precision=8),
-                                            calibratedPt = LazyVar("calibratedPt", float,precision=8),
-                                            hovere = LazyVar("hovere", float,precision=8),
-                                            puCorrPt = LazyVar("puCorrPt", float,precision=8),
-                                            bremStrength = LazyVar("bremStrength", float,precision=8),
-                                            e2x2 = LazyVar("e2x2", float,precision=8),
-                                            e2x5 = LazyVar("e2x5", float,precision=8),
-                                            e3x5 = LazyVar("e3x5", float,precision=8),
-                                            e5x5 = LazyVar("e5x5", float,precision=8),
-                                            standaloneWP = LazyVar("standaloneWP", int,precision=8),
-                                            electronWP98 = LazyVar("electronWP98", int,precision=8),
-                                            photonWP80 = LazyVar("photonWP80", int,precision=8),
-                                            electronWP90 = LazyVar("electronWP90", int,precision=8),
-                                            looseL1TkMatchWP = LazyVar("looseL1TkMatchWP", int,precision=8),
-                                            stage2effMatch= LazyVar("stage2effMatch", int,precision=8),
+                                            isolation  = LazyVar("isolation", float,precision=16),
+                                            pt  = Var("pt",  float,precision=16),
+                                            eta  = Var("eta", float,precision=16),
+                                            phi = Var("phi", float,precision=16),
+                                            calibratedPt = LazyVar("calibratedPt", float,precision=16),
+                                            hovere = LazyVar("hovere", float,precision=16),
+                                            puCorrPt = LazyVar("puCorrPt", float,precision=16),
+                                            bremStrength = LazyVar("bremStrength", float,precision=16),
+                                            e2x2 = LazyVar("e2x2", float,precision=16),
+                                            e2x5 = LazyVar("e2x5", float,precision=16),
+                                            e3x5 = LazyVar("e3x5", float,precision=16),
+                                            e5x5 = LazyVar("e5x5", float,precision=16),
+                                            standaloneWP = LazyVar("standaloneWP", int,precision=16),
+                                            electronWP98 = LazyVar("electronWP98", int,precision=16),
+                                            photonWP80 = LazyVar("photonWP80", int,precision=16),
+                                            electronWP90 = LazyVar("electronWP90", int,precision=16),
+                                            looseL1TkMatchWP = LazyVar("looseL1TkMatchWP", int,precision=16),
+                                            stage2effMatch= LazyVar("stage2effMatch", int,precision=16),
                                         )
             )
         return CrystalClustersTable
@@ -724,9 +724,9 @@ def addDecodedCalo(types=['Had', 'Em'], regs=['HGCal','Barrel','HGCalNoTK']):
                             singleton = cms.bool(False), # the number of entries is variable
                             extension = cms.bool(False), # this is the main table
                             variables = cms.PSet(
-                                pt  = Var("pt",  float,precision=8),
-                                phi = Var("phi", float,precision=8),
-                                eta  = Var("eta", float,precision=8),
+                                pt  = Var("pt",  float,precision=16),
+                                phi = Var("phi", float,precision=16),
+                                eta  = Var("eta", float,precision=16),
                                 hwQual = LazyVar("hwQual", int, doc="id"),
                                 hwEta = LazyVar("hwEta", int, doc="hwEta"),
                                 hwPhi = LazyVar("hwPhi", int, doc="hwPhi"),
@@ -790,10 +790,14 @@ def oldInputs_12_3_X():
 def addEDMOutput():
     process.out = cms.OutputModule("PoolOutputModule",
                                    fileName = cms.untracked.string("debugPF.root"),
-                                   SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring("p"))
+                                   SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring("p")),
+                                   # keep only the branch produced by the Layer‑2 EG module
+                                   outputCommands = cms.untracked.vstring(
+                                       "drop *",
+                                       "keep *_l1tLayer2EG_L1CtTkElectron_*"
+                                   )
                                )
-    process.end = cms.EndPath(process.out)
-    process.maxEvents.input = 10
+    process.edmend = cms.EndPath(process.out)
 
 if False:
     #process.source.fileNames  = [ '/store/cmst3/group/l1tr/gpetrucc/11_1_0/NewInputs110X/110121.done/TTbar_PU200/inputs110X_%d.root' % i for i in (1,)] #3,7,8,9) ]
@@ -848,3 +852,8 @@ def saveGenCands():
                                            ),
                                       )
     process.p += process.gencandTable
+
+# addGenLep([11,13])
+# addTkEG()
+# saveCands()
+# addEDMOutput()
