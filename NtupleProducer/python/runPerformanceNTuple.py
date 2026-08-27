@@ -16,7 +16,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1))
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:./inputs151X_1.root'),
+    fileNames = cms.untracked.vstring('file:./inputs151X_100.root'),
     inputCommands = cms.untracked.vstring("keep *", 
             "drop l1tPFClusters_*_*_*",
             "drop l1tPFTracks_*_*_*",
@@ -579,6 +579,9 @@ def addStaEG(postfix=""):
                             phi = Var("phi", float,precision=16),
                             eta  = Var("eta", float,precision=16),
                             hwQual    = LazyVar("hwQual", int, doc="id"),
+                            hwPt    = LazyVar("hwPt", int, doc="hw pt"),
+                            hwEta    = LazyVar("hwEta", int, doc="hw eta"),
+                            hwPhi    = LazyVar("hwPhi", int, doc="hw phi"),
                         )
                     )
         return staEgTable
@@ -606,6 +609,9 @@ def addTkEG(doL1=False, doL2=True, postfix=""):
                             phi = Var("phi", float,precision=16),
                             eta  = Var("eta", float,precision=16),
                             hwQual    = LazyVar("hwQual", int, doc="id"),
+                            hwPt    = LazyVar("hwPt", int, doc="hw pt"),
+                            hwEta    = LazyVar("hwEta", int, doc="hw eta"),
+                            hwPhi    = LazyVar("hwPhi", int, doc="hw phi"),
                             tkIso   = LazyVar("trkIsol", float, precision=16),
                             tkIsoPV  = LazyVar("trkIsolPV", float, precision=16),
                             pfIso   = LazyVar("pfIsol", float, precision=16),
@@ -621,11 +627,19 @@ def addTkEG(doL1=False, doL2=True, postfix=""):
         tkEleTable.variables.charge = LazyVar("charge", int, doc="charge")
         tkEleTable.variables.idScore = LazyVar("idScore", float,precision=16)
         tkEleTable.variables.vz     = LazyVar("trkzVtx",  float,precision=16)
+        tkEleTable.variables.hwTkVz     = LazyVar("trkPtr.getZ0Bits",  int)
+        tkEleTable.variables.hwEtaSector     = LazyVar("trkPtr.etaSector",  int)
+        tkEleTable.variables.hwPhiSector     = LazyVar("trkPtr.phiSector",  int)
         tkEleTable.variables.tkEta = LazyVar("trkPtr.eta", float,precision=16)
+        tkEleTable.variables.hwTkTanL = LazyVar("trkPtr.getTanlBits", int)
         tkEleTable.variables.tkPhi = LazyVar("trkPtr.phi", float,precision=16)
+        tkEleTable.variables.hwTkPhi = LazyVar("trkPtr.getPhiBits", int)
         tkEleTable.variables.tkPt = LazyVar("trkPtr.momentum.perp", float,precision=16)
+        tkEleTable.variables.hwTkRInv = LazyVar("trkPtr.getRinvBits", int)
         tkEleTable.variables.caloEta = LazyVar("egCaloPtr.eta", float,precision=16)
+        tkEleTable.variables.hwCaloEta = LazyVar("egCaloPtr.hwEta", int)
         tkEleTable.variables.caloPhi = LazyVar("egCaloPtr.phi", float,precision=16)
+        tkEleTable.variables.hwCaloPhi = LazyVar("egCaloPtr.hwPhi", int)
 
         return tkEmTable, tkEleTable
                                    
@@ -794,7 +808,8 @@ def addEDMOutput():
                                    # keep only the branch produced by the Layer‑2 EG module
                                    outputCommands = cms.untracked.vstring(
                                        "drop *",
-                                       "keep *_l1tLayer2EG_L1CtTkElectron_*"
+                                       "keep *_l1tLayer2EG_L1CtTkElectron_*",
+                                       "keep *_l1tLayer1_Puppi_*"
                                    )
                                )
     process.edmend = cms.EndPath(process.out)
@@ -829,9 +844,14 @@ def saveCands():
                                                pdgId = cms.string("pdgId"),
                                                charge = cms.string("charge"),
                                                dxy = cms.string("dxy"),
-                                               hwDxy = cms.string("hwDxy"),
+                                               hwDxy = cms.string("hwDxy:uint32_int"),
                                                z0 = cms.string("z0"),
-                                               hwTkQuality = cms.string("hwTkQuality")
+                                               hwTkQuality = cms.string("hwTkQuality:uint32_int"),
+                                               hwPt = cms.string("hwPt:uint32_int"),
+                                               hwEta = cms.string("hwEta:uint32_int"),
+                                               hwPhi = cms.string("hwPhi:uint32_int"),
+                                               hwZ0 = cms.string("hwZ0:uint32_int"),
+                                               hwPuppiWeight = cms.string("hwPuppiWeight:uint32_int")
                                            ),
                                        )
     # monitorPerf("L1PF", "l1tLayer1:PF", saveCands=True)
