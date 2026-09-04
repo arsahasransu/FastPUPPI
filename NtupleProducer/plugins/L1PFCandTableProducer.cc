@@ -33,11 +33,12 @@ class L1PFCandTableProducer : public edm::global::EDProducer<>  {
 
         struct ExtraVar {
             std::string name, expr;
-            bool isUint32;  // True if user specified "uint32_int", false for float (default)
+            bool isUint32;  // True if user specified "uint32_int"
+            bool isInt32;   // True if user specified "int32_int", false for float (default)
             StringObjectFunction<reco::Candidate> func;
             
             ExtraVar(const std::string & n, const std::string & expr) 
-                : name(n), expr(expr), isUint32(false), func(expr, true) {}
+                : name(n), expr(expr), isUint32(false), isInt32(false), func(expr, true) {}
         };
         std::vector<ExtraVar> extraVars_;
 
@@ -72,11 +73,13 @@ L1PFCandTableProducer::L1PFCandTableProducer(const edm::ParameterSet& iConfig) :
         for (const std::string & varname : morenames) {
             std::string expr = vars.getParameter<std::string>(varname);
             
-            // Check if user specified "uint32_int" type
-            // Config format: "expression:uint32_int" or just "expression" (defaults to float)
+            // Check if user specified "uint32_int" or "int32_int" type
+            // Config format: "expression:uint32_int", "expression:int32_int", or just "expression" (defaults to float)
             // E.g., "hwQual:uint32_int" -> stored as uint32_t
-            //       "hwQual" -> stored as float (default)
+            //       "hwDxy:int32_int"   -> stored as int32_t
+            //       "hwQual"            -> stored as float (default)
             bool isUint32 = false;
+            bool isInt32 = false;
             size_t colonPos = expr.find(':');
             
             if (colonPos != std::string::npos) {
@@ -85,15 +88,18 @@ L1PFCandTableProducer::L1PFCandTableProducer(const edm::ParameterSet& iConfig) :
                 
                 if (typeStr == "uint32_int") {
                     isUint32 = true;
+                } else if (typeStr == "int32_int") {
+                    isInt32 = true;
                 } else {
                     throw cms::Exception("Configuration") 
                         << "Invalid type specification for variable '" << varname << "': '" << typeStr 
-                        << "'. Only 'uint32_int' is supported. Default is float.";
+                        << "'. Only 'uint32_int' and 'int32_int' are supported. Default is float.";
                 }
             }
             
             extraVars_.emplace_back(varname, expr);
             extraVars_.back().isUint32 = isUint32;
+            extraVars_.back().isInt32 = isInt32;
         }
     }
  }
@@ -108,6 +114,7 @@ L1PFCandTableProducer::produce(edm::StreamID id, edm::Event& iEvent, const edm::
     std::vector<const reco::Candidate *> selected;
     std::vector<float> vals_float;
     std::vector<uint32_t> vals_uint32;
+    std::vector<int32_t> vals_int32;
     
     for (auto & cands : cands_) {
         // get and select
@@ -144,7 +151,7 @@ L1PFCandTableProducer::produce(edm::StreamID id, edm::Event& iEvent, const edm::
         }
         out->addColumn<float>("mass", vals_float, "mass of cand");
 
-        // fill extra vars: float by default, uint32 if user specified "uint32_int"
+        // fill extra vars: float by default, uint32 if user specified "uint32_int", int32 if user specified "int32_int"
         for (const auto & evar : extraVars_) {
             if (evar.isUint32) {
                 // Store as uint32
@@ -153,6 +160,13 @@ L1PFCandTableProducer::produce(edm::StreamID id, edm::Event& iEvent, const edm::
                     vals_uint32[i] = static_cast<uint32_t>(evar.func(*selected[i]));
                 }
                 out->addColumn<uint32_t>(evar.name, vals_uint32, evar.expr);
+            } else if (evar.isInt32) {
+                // Store as int32
+                vals_int32.resize(ncands);
+                for (unsigned int i = 0; i < ncands; ++i) {
+                    vals_int32[i] = static_cast<int32_t>(evar.func(*selected[i]));
+                }
+                out->addColumn<int32_t>(evar.name, vals_int32, evar.expr);
             } else {
                 // Store as float (default)
                 vals_float.resize(ncands);

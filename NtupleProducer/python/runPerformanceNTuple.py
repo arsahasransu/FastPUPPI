@@ -628,7 +628,6 @@ def addTkEG(doL1=False, doL2=True, postfix=""):
         tkEleTable.variables.idScore = LazyVar("idScore", float,precision=16)
         tkEleTable.variables.vz     = LazyVar("trkzVtx",  float,precision=16)
         tkEleTable.variables.hwTkVz     = LazyVar("trkPtr.getZ0Bits",  int)
-        tkEleTable.variables.hwEtaSector     = LazyVar("trkPtr.etaSector",  int)
         tkEleTable.variables.hwPhiSector     = LazyVar("trkPtr.phiSector",  int)
         tkEleTable.variables.tkEta = LazyVar("trkPtr.eta", float,precision=16)
         tkEleTable.variables.hwTkTanL = LazyVar("trkPtr.getTanlBits", int)
@@ -637,9 +636,9 @@ def addTkEG(doL1=False, doL2=True, postfix=""):
         tkEleTable.variables.tkPt = LazyVar("trkPtr.momentum.perp", float,precision=16)
         tkEleTable.variables.hwTkRInv = LazyVar("trkPtr.getRinvBits", int)
         tkEleTable.variables.caloEta = LazyVar("egCaloPtr.eta", float,precision=16)
-        tkEleTable.variables.hwCaloEta = LazyVar("egCaloPtr.hwEta", int)
+        tkEleTable.variables.hwCaloEta = LazyVar("hwCaloEta", int)
         tkEleTable.variables.caloPhi = LazyVar("egCaloPtr.phi", float,precision=16)
-        tkEleTable.variables.hwCaloPhi = LazyVar("egCaloPtr.hwPhi", int)
+        tkEleTable.variables.hwCaloPhi = LazyVar("hwCaloPhi", int)
 
         return tkEmTable, tkEleTable
                                    
@@ -844,14 +843,14 @@ def saveCands():
                                                pdgId = cms.string("pdgId"),
                                                charge = cms.string("charge"),
                                                dxy = cms.string("dxy"),
-                                               hwDxy = cms.string("hwDxy:uint32_int"),
+                                               # hwDxy = cms.string("hwDxy:int32_int"),
                                                z0 = cms.string("z0"),
-                                               hwTkQuality = cms.string("hwTkQuality:uint32_int"),
-                                               hwPt = cms.string("hwPt:uint32_int"),
-                                               hwEta = cms.string("hwEta:uint32_int"),
-                                               hwPhi = cms.string("hwPhi:uint32_int"),
-                                               hwZ0 = cms.string("hwZ0:uint32_int"),
-                                               hwPuppiWeight = cms.string("hwPuppiWeight:uint32_int")
+                                               hwTkQuality = cms.string("hwTkQuality:int32_int"),
+                                               hwPt = cms.string("hwPt:int32_int"),
+                                               hwEta = cms.string("hwEta:int32_int"),
+                                               hwPhi = cms.string("hwPhi:int32_int"),
+                                               hwZ0 = cms.string("hwZ0:int32_int"),
+                                               hwPuppiWeight = cms.string("hwPuppiWeight:int32_int")
                                            ),
                                        )
     # monitorPerf("L1PF", "l1tLayer1:PF", saveCands=True)
